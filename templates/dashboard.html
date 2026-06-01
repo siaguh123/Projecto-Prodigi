@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2>📊 Bem-vindo, {{ session.username }}!</h2>
+
+{% if session.idperfil == 1 %}
+    {# Médico #}
+    <div class="card">
+        <h3>👨‍⚕️ Painel do Médico</h3>
+        <p>Ações disponíveis:</p>
+        <ul>
+            <li>✅ Registar atos médicos</li>
+            <li>✅ Prescrever exames/medicamentos</li>
+            <li>✅ Internar doentes</li>
+            <li>✅ Dar alta</li>
+        </ul>
+    </div>
+
+{% elif session.idperfil == 2 %}
+    {# Enfermeiro #}
+    <div class="card">
+        <h3>🩺 Painel do Enfermeiro</h3>
+        <p>Ações disponíveis:</p>
+        <ul>
+            <li>✅ Registar triagem (Manchester)</li>
+            <li>✅ Verificar sinais vitais</li>
+            <li>✅ Consultar episódios ativos</li>
+        </ul>
+    </div>
+
+{% elif session.idperfil == 3 %}
+    {# Rececionista #}
+    <div class="card">
+        <h3>📋 Painel do Rececionista</h3>
+        <p>Ações disponíveis:</p>
+        <ul>
+            <li>✅ Registrar novos utentes</li>
+            <li>✅ Abrir episódios de urgência</li>
+            <li>✅ Consultar admissões do dia</li>
+        </ul>
+    </div>
+
+{% elif session.idperfil == 4 %}
+    {# Administrador #}
+    <div class="card">
+        <h3>👑 Painel do Administrador</h3>
+        <p>Ações disponíveis:</p>
+        <ul>
+            <li>✅ Tudo (acesso total)</li>
+            <li>✅ Gestão de utilizadores</li>
+            <li>✅ Re-treino do modelo IA</li>
+            <li>✅ Exportação de dados anonimizados</li>
+        </ul>
+    </div>
+{% endif %}
+
+<div class="card">
+    <h3>🔗 Links Rápidos</h3>
+    <p>
+        <a href="/docs" class="btn" target="_blank">📚 Swagger API</a>
+        <a href="/ia" class="btn btn-success">🤖 Previsão IA</a>
+        <a href="/exportar" class="btn">📤 Exportar Anonimizado</a>
+    </p>
+</div>
+{% endblock %}

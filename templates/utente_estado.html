@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Estado do Utente{% endblock %}
+{% block content %}
+
+<h2>🔍 Estado do Utente — {{ utente.nome }} {{ utente.apelido }}</h2>
+
+<div class="card" style="background:#f0f8ff;">
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
+    <div><strong>Nº SNS</strong><br>{{ utente.numutente }}</div>
+    <div><strong>Nome</strong><br>{{ utente.nome }} {{ utente.apelido }}</div>
+    <div><strong>Sexo</strong><br>{{ "Masculino" if utente.sexo == "M" else "Feminino" }}</div>
+    <div><strong>Data Nascimento</strong><br>{{ utente.datanasc.strftime('%d/%m/%Y') if utente.datanasc else '—' }}</div>
+    <div><strong>Localidade</strong><br>{{ utente.localidade or '—' }}</div>
+    <div><strong>Total Episódios</strong><br>{{ detalhe_episodios|length }}</div>
+  </div>
+</div>
+
+{% for d in detalhe_episodios %}
+{% set ep = d.episodio %}
+{% set estado_cor = {1: '#3498db', 2: '#f39c12', 3: '#9b59b6', 4: '#e74c3c', 5: '#27ae60'} %}
+{% set estado_nome = {1: 'Admitido', 2: 'Em Triagem', 3: 'Em Consulta', 4: 'Internado', 5: 'Alta'} %}
+
+<div class="card" style="border-left: 5px solid {{ estado_cor.get(ep.idestadoatual, '#ccc') }}; margin-bottom:15px;">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h3>Episódio #{{ ep.numepis }}</h3>
+    <span style="background:{{ estado_cor.get(ep.idestadoatual, '#ccc') }}; color:white; padding:4px 12px; border-radius:20px; font-size:0.85rem;">
+      {{ estado_nome.get(ep.idestadoatual, 'Desconhecido') }}
+    </span>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:10px 0; font-size:0.9rem;">
+    <div><strong>Hospital:</strong> {{ ep.nomehosp }}</div>
+    <div><strong>Entrada:</strong> {{ ep.datahorainicio.strftime('%d/%m/%Y %H:%M') if ep.datahorainicio else '—' }}</div>
+    <div><strong>Saída:</strong> {{ ep.datahorasaida.strftime('%d/%m/%Y %H:%M') if ep.datahorasaida else '—' }}</div>
+  </div>
+
+  {% if d.triagem %}
+  {% set cores = {1:'#c0392b',2:'#e67e22',3:'#f1c40f',4:'#27ae60',5:'#2980b9'} %}
+  {% set nomes_cor = {1:'Vermelho',2:'Laranja',3:'Amarelo',4:'Verde',5:'Azul'} %}
+  <div style="background:#fff9f0; padding:10px; border-radius:5px; margin:8px 0;">
+    <strong>🔴 Triagem Manchester</strong>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; font-size:0.85rem;">
+      <div><strong>Prioridade:</strong>
+        <span style="background:{{ cores.get(d.triagem.idprioridade_cor,'#ccc') }}; color:{{ 'black' if d.triagem.idprioridade_cor == 3 else 'white' }}; padding:2px 8px; border-radius:10px;">
+          {{ nomes_cor.get(d.triagem.idprioridade_cor, '—') }}
+        </span>
+      </div>
+      <div><strong>Tensão:</strong> {{ d.triagem.tensaoarterial or '—' }}</div>
+      <div><strong>Temperatura:</strong> {{ d.triagem.temperatura or '—' }}{% if d.triagem.temperatura %}ºC{% endif %}</div>
+      <div style="grid-column:span 3;"><strong>Sintomas:</strong> {{ d.triagem.sintomas or '—' }}</div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if d.atos %}
+  <div style="background:#f0f8ff; padding:10px; border-radius:5px; margin:8px 0;">
+    <strong>📝 Atos Médicos ({{ d.atos|length }})</strong>
+    {% for ato in d.atos %}
+    <div style="font-size:0.85rem; margin-top:5px; padding:4px 0; border-bottom:1px solid #ddd;">
+      Ato #{{ ato.idato }} — Início: {{ ato.datahorainic.strftime('%d/%m/%Y %H:%M') if ato.datahorainic else '—' }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if d.prescricoes %}
+  <div style="background:#f0fff0; padding:10px; border-radius:5px; margin:8px 0;">
+    <strong>💊 Prescrições ({{ d.prescricoes|length }})</strong>
+    {% for p in d.prescricoes %}
+    <div style="font-size:0.85rem; margin-top:5px;">
+      {{ p.medicamento }} — {{ p.dosagem }}, {{ p.frequencia }}{% if p.duracao %}, {{ p.duracao }}{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if d.internamento %}
+  <div style="background:#fff0f0; padding:10px; border-radius:5px; margin:8px 0;">
+    <strong>🏥 Internamento</strong>
+    <div style="font-size:0.85rem; margin-top:5px; display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+      <div><strong>Cama/Quarto:</strong> {{ d.internamento.cama_quarto }}</div>
+      <div><strong>Serviço:</strong> {{ d.internamento.servico }}</div>
+      <div><strong>Início:</strong> {{ d.internamento.datahorainicio.strftime('%d/%m/%Y %H:%M') if d.internamento.datahorainicio else '—' }}</div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% else %}
+<div class="card"><p>Este utente não tem episódios registados.</p></div>
+{% endfor %}
+
+<a href="/dashboard" class="btn">← Voltar ao Dashboard</a>
+
+{% endblock %}

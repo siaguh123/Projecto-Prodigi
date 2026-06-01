@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Previsão IA{% endblock %}
+
+{% block content %}
+<h2>🤖 Previsão de Tempo de Espera</h2>
+
+<div class="card">
+    <form method="GET" action="/ia/prever">
+        <div class="form-group">
+            <label>🏥 Prioridade Manchester</label>
+            <select name="prioridade" required>
+                <option value="">Selecione...</option>
+                <option value="1">🔴 Imediata (Vermelho) - 0 min base</option>
+                <option value="2">🟠 Muito Urgente (Laranja) - 15 min</option>
+                <option value="3">🟡 Urgente (Amarelo) - 30 min</option>
+                <option value="4">🟢 Pouco Urgente (Verde) - 60 min</option>
+                <option value="5">🔵 Não Urgente (Azul) - 120 min</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>⏰ Hora de entrada (0-23)</label>
+            <input type="number" name="hora" min="0" max="23" value="14" required>
+        </div>
+        
+        <div class="form-group">
+            <label>📅 Dia da semana</label>
+            <select name="dia_semana" required>
+                <option value="0">Segunda-feira</option>
+                <option value="1">Terça-feira</option>
+                <option value="2">Quarta-feira</option>
+                <option value="3">Quinta-feira</option>
+                <option value="4">Sexta-feira</option>
+                <option value="5">Sábado</option>
+                <option value="6">Domingo</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn">🔮 Prever Tempo de Espera</button>
+    </form>
+</div>
+
+{% if resultado %}
+<div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <h3>📊 Resultado da Previsão</h3>
+    <table style="color: white;">
+        <tr><td style="border: none;"><strong>Prioridade:</strong></td><td style="border: none;">{{ resultado.prioridade_texto }}</td></tr>
+        <tr><td style="border: none;"><strong>Hora:</strong></td><td style="border: none;">{{ resultado.hora }}:00</td></tr>
+        <tr><td style="border: none;"><strong>Tempo estimado:</strong></td><td style="border: none; font-size: 2rem; font-weight: bold;">{{ resultado.tempo_estimado_minutos }} minutos</td></tr>
+        <tr><td style="border: none;"><strong>Base (prioridade):</strong></td><td style="border: none;">{{ resultado.prioridade_base_minutos }} min</td></tr>
+        <tr><td style="border: none;"><strong>Modelo usado:</strong></td><td style="border: none;">{{ resultado.modelo_usado|default("Regras simples") }}</td></tr>
+    </table>
+    <p style="margin-top: 15px;">{{ resultado.mensagem }}</p>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3>ℹ️ Sobre a Previsão</h3>
+    <p>O modelo de IA (Random Forest) foi treinado com dados históricos do hospital, considerando:</p>
+    <ul>
+        <li>Prioridade Manchester (peso principal)</li>
+        <li>Hora do dia (horas de ponta aumentam o tempo)</li>
+        <li>Dia da semana (fim de semana mais calmo)</li>
+    </ul>
+</div>
+{% endblock %}

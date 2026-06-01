@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Exportação Anonimizada{% endblock %}
+
+{% block content %}
+<h2>📤 Exportação de Dados Anonimizados (RGPD)</h2>
+
+<div class="card">
+    <h3>⚙️ Opções de Exportação</h3>
+    <p>Os dados pessoais serão removidos ou pseudonimizados:</p>
+    <ul>
+        <li>❌ Nome, NIF, SNS, telefone, morada - <strong>Removidos</strong></li>
+        <li>🔄 Número de utente - <strong>Pseudonimizado</strong> (hash)</li>
+        <li>📅 Data de nascimento - <strong>Generalizada</strong> (faixa etária)</li>
+        <li>✅ Dados clínicos - <strong>Mantidos</strong> (prioridade, sintomas, tempo)</li>
+    </ul>
+</div>
+
+<div class="card">
+    <h3>📄 Exportar em JSON</h3>
+    <p>Para integração com outras aplicações</p>
+    <a href="/exportar/anonimizado?formato=json" class="btn" target="_blank">📥 Baixar JSON</a>
+</div>
+
+<div class="card">
+    <h3>📊 Exportar em CSV</h3>
+    <p>Para análise em Excel/Python (pandas)</p>
+    <a href="/exportar/anonimizado?formato=csv" class="btn btn-success" target="_blank">📥 Baixar CSV</a>
+</div>
+
+{% if dados_preview %}
+<div class="card">
+    <h3>🔍 Pré-visualização (primeiros 5 registos)</h3>
+    <table>
+        <thead>
+            <tr><th>ID Episódio</th><th>ID Utente (Hash)</th><th>Faixa Etária</th><th>Sexo</th><th>Prioridade</th><th>Tempo (min)</th></tr>
+        </thead>
+        <tbody>
+            {% for row in dados_preview %}
+            <tr>
+                <td>{{ row.id_episodio }}</td>
+                <td>{{ row.id_utente_pseudonimizado }}</td>
+                <td>{{ row.faixa_etaria }}</td>
+                <td>{{ row.sexo }}</td>
+                <td>{{ row.prioridade_manchester }}</td>
+                <td>{{ row.tempo_espera_minutos or '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3>ℹ️ Conformidade RGPD</h3>
+    <p>Esta exportação cumpre os requisitos do Regulamento Geral de Proteção de Dados (RGPD):</p>
+    <ul>
+        <li>✅ Minimização de dados</li>
+        <li>✅ Pseudonimização de identificadores</li>
+        <li>✅ Generalização de dados sensíveis (idade)</li>
+        <li>✅ Finalidade analítica (não permite re-identificação)</li>
+    </ul>
+</div>
+{% endblock %}
+

@@ -1,0 +1,35 @@
+services:
+  # --- CONTENTOR 1: BASE DE DADOS (PostgreSQL) ---
+  db:
+    image: postgres:15
+    container_name: hospital_db_container
+    restart: always
+    environment:
+      POSTGRES_USER: user_admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: hospital_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:Z
+
+  # --- CONTENTOR 2: APLICAÇÃO (FastAPI Híbrido) ---
+  app:
+    build: .
+    container_name: hospital_app_container
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      # Nota: 'db' refere-se ao nome do serviço acima
+      DATABASE_URL: postgresql://user_admin:password123@db:5432/hospital_db
+      SECRET_KEY: siaguh-prodigi-2026-chave-secreta-projeto-academico
+    volumes:
+      - .:/app:Z
+      - /app/.venv
+      - /app/__pycache__
+
+volumes:
+  postgres_data:

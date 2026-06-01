@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Painel Médico{% endblock %}
+{% block content %}
+<h2>👨‍⚕️ Painel do Médico — {{ session.username }}</h2>
+
+{% if mensagem %}<div class="alert alert-success">✅ {{ mensagem }}</div>{% endif %}
+{% if erro %}<div class="alert alert-error">❌ {{ erro }}</div>{% endif %}
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+  <div class="card">
+    <h3>📝 Registar Ato Médico</h3>
+    <form method="POST" action="/painel/ato">
+      <div class="form-group"><label>Episódio</label>
+        <select name="numepis" required>
+          {% for e in episodios %}<option value="{{ e.numepis }}">Ep. {{ e.numepis }} — Utente {{ e.numutente }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group"><label>Médico</label>
+        <select name="mednumfunc" required>
+          {% for m in medicos %}<option value="{{ m.mednumfunc }}">Médico {{ m.mednumfunc }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group"><label>Tipo de Ato</label>
+        <select name="idtipoato" required>
+          {% for t in tipos_ato %}<option value="{{ t.idtipoato }}">{{ t.designacao }}</option>{% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn">Registar Ato</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>💊 Emitir Prescrição</h3>
+    <form method="POST" action="/painel/prescricao">
+      <div class="form-group"><label>Episódio</label>
+        <select name="numepis" required>
+          {% for e in episodios %}<option value="{{ e.numepis }}">Ep. {{ e.numepis }} — Utente {{ e.numutente }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group"><label>Médico</label>
+        <select name="mednumfunc" required>
+          {% for m in medicos %}<option value="{{ m.mednumfunc }}">Médico {{ m.mednumfunc }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group"><label>Medicamento</label><input type="text" name="medicamento" required></div>
+      <div class="form-group"><label>Dosagem (ex: 500mg)</label><input type="text" name="dosagem" required></div>
+      <div class="form-group"><label>Frequência (ex: 3x/dia)</label><input type="text" name="frequencia" required></div>
+      <div class="form-group"><label>Duração (ex: 7 dias)</label><input type="text" name="duracao"></div>
+      <button type="submit" class="btn btn-success">Emitir Prescrição</button>
+    </form>
+  </div>
+
+</div>
+
+<div class="card">
+  <h3>🏥 Episódios Activos — Dar Alta</h3>
+  <table>
+    <tr><th>Nº Ep.</th><th>Utente</th><th>Hospital</th><th>Entrada</th><th>Estado</th><th>Acção</th></tr>
+    {% for e in episodios %}
+    <tr>
+      <td>{{ e.numepis }}</td>
+      <td>{{ e.numutente }}</td>
+      <td>{{ e.nomehosp }}</td>
+      <td>{{ e.datahorainicio.strftime('%d/%m/%Y %H:%M') if e.datahorainicio else '—' }}</td>
+      <td>{% if e.idestadoatual == 1 %}Admitido{% elif e.idestadoatual == 2 %}Em Triagem{% elif e.idestadoatual == 3 %}Em Consulta{% elif e.idestadoatual == 4 %}Internado{% else %}Alta{% endif %}</td>
+      <td>
+        <form method="POST" action="/painel/alta/{{ e.numepis }}" style="display:inline;">
+          <button type="submit" class="btn btn-danger" style="padding:5px 10px; font-size:0.8rem;">Alta</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Painel Enfermeiro{% endblock %}
+{% block content %}
+<h2>🩺 Painel do Enfermeiro — {{ session.username }}</h2>
+
+{% if mensagem %}<div class="alert alert-success">✅ {{ mensagem }}</div>{% endif %}
+{% if erro %}<div class="alert alert-error">❌ {{ erro }}</div>{% endif %}
+
+<div class="card">
+  <h3>🔴 Registar Triagem Manchester</h3>
+  <form method="POST" action="/painel/triagem">
+    <div class="form-group"><label>Episódio</label>
+      <select name="numepis" required>
+        {% for e in episodios %}<option value="{{ e.numepis }}">Ep. {{ e.numepis }} — Utente {{ e.numutente }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="form-group"><label>Enfermeiro</label>
+      <select name="enfnumfunc" required>
+        {% for enf in enfermeiros %}<option value="{{ enf.enfnumfunc }}">Enfermeiro {{ enf.enfnumfunc }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="form-group"><label>Prioridade Manchester</label>
+      <select name="idprioridade_cor" required>
+        <option value="1">🔴 Imediata (Vermelho)</option>
+        <option value="2">🟠 Muito Urgente (Laranja)</option>
+        <option value="3">🟡 Urgente (Amarelo)</option>
+        <option value="4">🟢 Pouco Urgente (Verde)</option>
+        <option value="5">🔵 Não Urgente (Azul)</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Sintomas</label><textarea name="sintomas" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:5px;"></textarea></div>
+    <div class="form-group"><label>Tensão Arterial (ex: 120/80)</label><input type="text" name="tensaoarterial" placeholder="120/80"></div>
+    <div class="form-group"><label>Temperatura (ºC)</label><input type="number" step="0.1" name="temperatura" placeholder="36.5"></div>
+    <button type="submit" class="btn">Registar Triagem</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3>📋 Episódios a Aguardar Triagem</h3>
+  <table>
+    <tr><th>Nº Ep.</th><th>Utente</th><th>Hospital</th><th>Entrada</th></tr>
+    {% for e in episodios %}
+    <tr>
+      <td>{{ e.numepis }}</td>
+      <td>{{ e.numutente }}</td>
+      <td>{{ e.nomehosp }}</td>
+      <td>{{ e.datahorainicio.strftime('%d/%m/%Y %H:%M') if e.datahorainicio else '—' }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
